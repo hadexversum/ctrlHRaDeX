@@ -45,17 +45,22 @@ app_server <- function(input, output, session) {
   
   
   hires_dat <- reactive({
-    calculate_hires(fit_params(), method = input[["agg_method"]])
+    calculate_hires(fit_params(), method = settings()[["agg_method"]])
   })
+  
+  fit_state <- reactive({ unique(fit_params()[["State"]]) })
   
   kin_dat <- reactive({
     
     HRaDeX::prepare_kin_dat(exp_dat(), 
-                            state = unique(exp_dat()[["State"]])[1],
-                            time_0 = input[["time_0"]],
-                            time_100 = input[["time_100"]])
+                            state = fit_state(),
+                            time_0 = settings()[["time_0"]],
+                            time_100 = settings()[["time_100"]])
     
   })
+  
+  settings <- mod_settings_server("settings",
+                                  dat = exp_dat)
   
   mod_peptides_server("peptides",
                       kin_dat = kin_dat,

@@ -26,22 +26,7 @@ app_ui <- function(request) {
             "Fit params are in `fit params` tab from HRaDeX."
           ),
           div(
-            selectInput(inputId = ("time_0"),
-                        label = "Select no deut timepoint",
-                        choices = c(0, 0.1),
-                        selected = 0)
-            ,
-            selectInput(inputId = ("time_100"),
-                        label = "Select FD timepoint",
-                        choices = c(1000, 1440),
-                        selected = 1440),
-            selectInput(input = "agg_method",
-                        label = "Select method of aggregation",
-                        choices = c("shortest", "weighted"),
-                        selected = "weighted")
-            ## TODO: states + updates
-            ## preferably mod_settings
-            
+            mod_settings_ui("settings")
           )
           
         ),

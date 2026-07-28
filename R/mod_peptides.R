@@ -50,7 +50,7 @@ mod_peptides_server <- function(id, kin_dat, fit_params){
     
     output[["peptide_uc"]] <- ggiraph::renderGirafe({
       
-      validate(need(!is.null(input[["peptide_list_rows_selected"]]), ""))
+      validate(need(!is.null(input[["peptide_list_rows_selected"]]), "Select peptide to see its uptake curve."))
       
       girafe(ggobj = HRaDeX::recreate_uc(fit_dat = pep_kin_dat(), 
                                          fit_values_all = fit_params(), 
