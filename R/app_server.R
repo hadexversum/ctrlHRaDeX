@@ -25,6 +25,15 @@ app_server <- function(input, output, session) {
     
   })
   
+  output[["state_info"]] <- renderText({
+    
+    if(is.null(fit_state())){
+      "No state detected"
+    } else {
+      paste0("Detected state: ", fit_state())
+    }
+    
+  })
   
   fit_params <- reactive({
     

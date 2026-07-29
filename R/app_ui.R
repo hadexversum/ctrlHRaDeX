@@ -23,7 +23,8 @@ app_ui <- function(request) {
                       label = "Experimental data:"),
             fileInput(inputId = ("fit_params"),
                       label = "Fit parameters:"),
-            "Fit params are in `fit params` tab from HRaDeX."
+            "Fit params are in `fit params` tab from HRaDeX.",
+            textOutput("state_info") 
           ),
           div(
             mod_settings_ui("settings")
