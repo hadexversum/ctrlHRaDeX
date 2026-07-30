@@ -13,7 +13,8 @@ mod_overview_ui <- function(id) {
     ggiraph::girafeOutput(outputId = ns("hires_plot"), width = "80%"),
     ggiraph::girafeOutput(outputId = ns("validation"), width = "80%"),
     textOutput(outputId = ns("rmse_stat")),
-    ggiraph::girafeOutput(outputId = ns("histogram"), width = "80%")
+    ggiraph::girafeOutput(outputId = ns("histogram"), width = "80%"),
+    mod_plot_and_table_ui(ns("hist_plot"))
     
   )
 }
@@ -48,8 +49,6 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params){
     
     rec_uc_rmse_dat_alpha <- reactive({
       
-     
-    
       HRaDeX::calculate_recovered_uc_rmse(rec_uc_dat_alpha(), sort = "ID")
     
     })
@@ -74,14 +73,24 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params){
       
     })
     
-    output[["histogram"]] <- ggiraph::renderGirafe({
+
+    
+    histogram_plot <- reactive({
       
-      plt <- ggplot(rec_uc_rmse_dat_alpha(), aes(rmse)) +
+      ggplot(rec_uc_rmse_dat_alpha(), aes(rmse)) +
         geom_histogram()
       
-      girafe(ggobj = plt)
-      
     })
+    
+    histogram_data <- reactive({
+      
+      mutate(rec_uc_rmse_dat_alpha(), 
+             rmse = round(rmse, 4))
+    })
+    
+    mod_plot_and_table_server("hist_plot",
+                              plt = histogram_plot,
+                              dat = histogram_data)
     
   })
 }
