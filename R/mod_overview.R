@@ -22,7 +22,7 @@ mod_overview_ui <- function(id) {
 #' overview Server Functions
 #'
 #' @noRd 
-mod_overview_server <- function(id, kin_dat, hires_dat, fit_params){
+mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
@@ -37,11 +37,9 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params){
     
     rec_uc_dat_alpha <- reactive({
       
-      # browser()
-      
       HRaDeX::create_uc_from_hires_dataset(kin_dat(),
-                                   fit_params(),
-                                   hires_method = "weighted")
+                                           fit_params(),
+                                           hires_method = settings()[["agg_method"]])
       
   
     

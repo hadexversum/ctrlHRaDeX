@@ -39,7 +39,7 @@ app_server <- function(input, output, session) {
     
     data_file <- input[["fit_params"]]
     
-    if(is.null(data_file)){
+    dat <- if(is.null(data_file)){
       read.csv("./data/fit_data_db_eEF1Ba-Alpha_KSCN.csv")
     } else {
       # validate(need(try({
@@ -47,19 +47,29 @@ app_server <- function(input, output, session) {
         read.csv(data_file[["datapath"]])
       # }), "File does not fullfill requirements. Check file requirements!"))
       # file
-      
     }
+
+    dat %>%
+      dplyr::rename(id = X)
+    
+    
     
   })
   
   
   hires_dat <- reactive({
+
+    
     calculate_hires(fit_params(), method = settings()[["agg_method"]])
+    
   })
   
   fit_state <- reactive({ unique(fit_params()[["State"]]) })
   
   kin_dat <- reactive({
+    
+    validate(need(settings()[["time_0"]] %in% unique(exp_dat()[["Exposure"]]), "Select correct no deut time"))
+    validate(need(settings()[["time_100"]] %in% unique(exp_dat()[["Exposure"]]), "Select correct full deut time"))
     
     HRaDeX::prepare_kin_dat(exp_dat(), 
                             state = fit_state(),
@@ -78,6 +88,7 @@ app_server <- function(input, output, session) {
   mod_overview_server("overview",
                       kin_dat = kin_dat,
                       hires_dat = hires_dat, 
-                      fit_params = fit_params)
+                      fit_params = fit_params, 
+                      settings = settings)
   
 }
