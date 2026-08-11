@@ -8,7 +8,7 @@ app_server <- function(input, output, session) {
   # Your application server logic
   
   
-  exp_dat <- reactive({
+  exp_dat_raw <- reactive({
     
     data_file <- input[["experimental_data"]]
     
@@ -25,6 +25,16 @@ app_server <- function(input, output, session) {
     
   })
   
+  exp_dat <- reactive({
+
+    if(settings()[["use_convention_exp"]]){
+      if(check_convention_usage(exp_dat_raw())){
+        exp_dat_raw()
+      } else { replace_sequences(exp_dat_raw()) }
+    } else { exp_dat_raw() }
+
+  })
+  
   output[["state_info"]] <- renderText({
     
     if(is.null(fit_state())){
@@ -32,6 +42,16 @@ app_server <- function(input, output, session) {
     } else {
       paste0("Detected state: ", fit_state())
     }
+    
+  })
+  
+  fit_protein <- reactive({ unique(fit_params()[["Protein"]]) })
+  exp_protein <- reactive({ unique(exp_dat()[["Protein"]]) })
+  
+  output[["file_info"]] <- renderText({
+    
+    if(fit_protein () == exp_protein()) { "Both files containt the same protein."
+      } else { "The files are not compatibile! "} 
     
   })
   
@@ -52,10 +72,19 @@ app_server <- function(input, output, session) {
     dat %>%
       dplyr::rename(id = X)
     
-    
-    
   })
   
+  # fit_params <- reactive({
+  #   
+  ## TODO - make replace_sequences work with sequence not only Sequence
+  #   
+  #   if(settings()[["use_convention_fit"]]){
+  #     if(check_convention_usage(fit_params_raw())){
+  #       fit_params_raw()
+  #     } else { replace_sequences(fit_params_raw()) }
+  #   } else { fit_params_raw() }
+  #   
+  # })
   
   hires_dat <- reactive({
 
