@@ -30,7 +30,7 @@ app_server <- function(input, output, session) {
     if(settings()[["use_convention_exp"]]){
       if(check_convention_usage(exp_dat_raw())){
         exp_dat_raw()
-      } else { replace_sequences(exp_dat_raw()) }
+      } else { HRaDeX::replace_sequences(exp_dat_raw()) }
     } else { exp_dat_raw() }
 
   })
@@ -55,7 +55,7 @@ app_server <- function(input, output, session) {
     
   })
   
-  fit_params <- reactive({
+  fit_params_raw <- reactive({
     
     data_file <- input[["fit_params"]]
     
@@ -74,17 +74,15 @@ app_server <- function(input, output, session) {
     
   })
   
-  # fit_params <- reactive({
-  #   
-  ## TODO - make replace_sequences work with sequence not only Sequence
-  #   
-  #   if(settings()[["use_convention_fit"]]){
-  #     if(check_convention_usage(fit_params_raw())){
-  #       fit_params_raw()
-  #     } else { replace_sequences(fit_params_raw()) }
-  #   } else { fit_params_raw() }
-  #   
-  # })
+  fit_params <- reactive({
+
+    if(settings()[["use_convention_fit"]]){
+      if(check_convention_usage(fit_params_raw())){
+        fit_params_raw()
+      } else { HRaDeX::replace_sequences(fit_params_raw()) }
+    } else { fit_params_raw() }
+
+  })
   
   hires_dat <- reactive({
 

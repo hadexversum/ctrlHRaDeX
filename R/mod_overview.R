@@ -51,10 +51,10 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings){
     
     })
     
-    rmse_mean <- reactive({ mean(rec_uc_rmse_dat_alpha()[["rmse"]]) })
+    rmse_mean <- reactive({ mean(rec_uc_rmse_dat_alpha()[["rmse"]], na.rm = TRUE) })
     
     
-    rmse_median <- reactive({ median(rec_uc_rmse_dat_alpha()[["rmse"]]) })
+    rmse_median <- reactive({ median(rec_uc_rmse_dat_alpha()[["rmse"]], na.rm = TRUE) })
     
     output[["rmse_stat"]] <- renderText({
       
