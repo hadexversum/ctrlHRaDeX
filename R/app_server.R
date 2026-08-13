@@ -25,14 +25,23 @@ app_server <- function(input, output, session) {
     
   })
   
+  is_convention <- reactive({
+    check_convention_usage(fit_params())
+    
+  })
+  
   exp_dat <- reactive({
 
-    if(settings()[["use_convention_exp"]]){
-      if(check_convention_usage(exp_dat_raw())){
-        exp_dat_raw()
-      } else { HRaDeX::replace_sequences(exp_dat_raw()) }
+    if(is_convention()){
+       HRaDeX::replace_sequences(exp_dat_raw()) 
     } else { exp_dat_raw() }
 
+  })
+  
+  is_compatibile <- reactive({
+    
+    fit_state() %in% exp_dat_raw()[["State"]]
+    
   })
   
   output[["state_info"]] <- renderText({
@@ -45,17 +54,23 @@ app_server <- function(input, output, session) {
     
   })
   
+  output[["convention_info"]] <- renderText({
+    
+    paste0("Convention detected in fit data and propagated to experimental data? ", is_convention())
+    
+  })
+  
   fit_protein <- reactive({ unique(fit_params()[["Protein"]]) })
   exp_protein <- reactive({ unique(exp_dat()[["Protein"]]) })
   
   output[["file_info"]] <- renderText({
     
-    if(fit_protein () == exp_protein()) { "Both files containt the same protein."
+    if(is_compatibile()) { "Both files containt the same state."
       } else { "The files are not compatibile! "} 
     
   })
   
-  fit_params_raw <- reactive({
+  fit_params <- reactive({
     
     data_file <- input[["fit_params"]]
     
@@ -74,18 +89,10 @@ app_server <- function(input, output, session) {
     
   })
   
-  fit_params <- reactive({
-
-    if(settings()[["use_convention_fit"]]){
-      if(check_convention_usage(fit_params_raw())){
-        fit_params_raw()
-      } else { HRaDeX::replace_sequences(fit_params_raw()) }
-    } else { fit_params_raw() }
-
-  })
   
   hires_dat <- reactive({
 
+    validate(need(is_compatibile(), "Load compatibile files and check the settings!"))
     
     calculate_hires(fit_params(), method = settings()[["agg_method"]])
     
@@ -94,6 +101,8 @@ app_server <- function(input, output, session) {
   fit_state <- reactive({ unique(fit_params()[["State"]]) })
   
   kin_dat <- reactive({
+    
+    validate(need(is_compatibile(), "Load compatibile files and check the settings!"))
     
     validate(need(settings()[["time_0"]] %in% unique(exp_dat()[["Exposure"]]), "Select correct no deut time"))
     validate(need(settings()[["time_100"]] %in% unique(exp_dat()[["Exposure"]]), "Select correct full deut time"))
