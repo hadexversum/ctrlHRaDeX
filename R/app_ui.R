@@ -24,8 +24,10 @@ app_ui <- function(request) {
             fileInput(inputId = ("fit_params"),
                       label = "Fit parameters:"),
             "Fit params are in `fit params` tab from HRaDeX.",
-            textOutput("state_info"),
-            textOutput("file_info")
+            div(
+              textOutput("state_info"),
+              textOutput("file_info")
+            )
             
           ),
           div(

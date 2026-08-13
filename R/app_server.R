@@ -106,11 +106,12 @@ app_server <- function(input, output, session) {
   })
   
   settings <- mod_settings_server("settings",
-                                  dat = exp_dat_raw)
+                                  dat = exp_dat_raw) 
   
   mod_peptides_server("peptides",
                       kin_dat = kin_dat,
-                      fit_params = fit_params)
+                      fit_params = fit_params, 
+                      settings = settings)
   
   mod_overview_server("overview",
                       kin_dat = kin_dat,

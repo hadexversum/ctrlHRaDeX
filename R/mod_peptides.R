@@ -18,7 +18,7 @@ mod_peptides_ui <- function(id) {
 #' peptides Server Functions
 #'
 #' @noRd 
-mod_peptides_server <- function(id, kin_dat, fit_params){
+mod_peptides_server <- function(id, kin_dat, fit_params, settings){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
  
@@ -54,7 +54,7 @@ mod_peptides_server <- function(id, kin_dat, fit_params){
       
       girafe(ggobj = HRaDeX::recreate_uc(fit_dat = pep_kin_dat(), 
                                          fit_values_all = fit_params(), 
-                                         hires_method = "weighted",
+                                         hires_method = settings()[["agg_method"]],
                                          interactive = TRUE))
       
     })
