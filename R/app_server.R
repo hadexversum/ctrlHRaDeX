@@ -114,6 +114,7 @@ app_server <- function(input, output, session) {
                       settings = settings)
   
   mod_overview_server("overview",
+                      fit_state = fit_state, 
                       kin_dat = kin_dat,
                       hires_dat = hires_dat, 
                       fit_params = fit_params, 

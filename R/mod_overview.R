@@ -22,7 +22,7 @@ mod_overview_ui <- function(id) {
 #' overview Server Functions
 #'
 #' @noRd 
-mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings){
+mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings, fit_state){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
@@ -67,7 +67,8 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings){
 
       girafe(ggobj = HRaDeX::plot_recovered_uc_coverage(rec_uc_rmse_dat_alpha(), 
                                                         interactive = TRUE,
-                                                        style = "coverage"))
+                                                        style = "coverage") +
+               labs(title = paste0("RMSE of recovered UC for ", fit_state(), " state")))
       
     })
     
