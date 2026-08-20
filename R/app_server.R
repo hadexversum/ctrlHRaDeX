@@ -94,7 +94,9 @@ app_server <- function(input, output, session) {
 
     validate(need(is_compatibile(), "Load compatibile files and check the settings!"))
     
-    calculate_hires(fit_params(), method = settings()[["agg_method"]])
+    calculate_hires(fit_params(), 
+                    method = settings()[["agg_method"]],
+                    fractional = settings()[["is_fractional"]])
     
   })
   
@@ -120,13 +122,14 @@ app_server <- function(input, output, session) {
   mod_peptides_server("peptides",
                       kin_dat = kin_dat,
                       fit_params = fit_params, 
+                      hires_dat = hires_dat,
                       settings = settings)
   
   mod_overview_server("overview",
                       fit_state = fit_state, 
                       kin_dat = kin_dat,
-                      hires_dat = hires_dat, 
                       fit_params = fit_params, 
+                      hires_dat = hires_dat, 
                       settings = settings)
   
 }

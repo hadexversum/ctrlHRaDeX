@@ -18,6 +18,9 @@ mod_settings_ui <- function(id) {
                 label = "Select FD timepoint",
                 choices = c(1000, 1440),
                 selected = 1440),
+    checkboxInput(inputId = ns("is_fractional"),
+                  label = "Fitting was done for fractional values?",
+                  value = TRUE),
     selectInput(input = ns("agg_method"),
                 label = "Select method of aggregation",
                 choices = c("shortest", "weighted"),
@@ -56,7 +59,8 @@ mod_settings_server <- function(id, dat){
       data.frame(
         time_0 = as.numeric(input[["time_0"]]),
         time_100 = as.numeric(input[["time_100"]]),
-        agg_method = input[["agg_method"]]
+        agg_method = input[["agg_method"]],
+        is_fractional = input[["is_fractional"]]
       )
      )
     ) 

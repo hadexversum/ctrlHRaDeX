@@ -60,6 +60,7 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings, fi
       
       HRaDeX::create_uc_from_hires_dataset(kin_dat(),
                                            fit_params(),
+                                           fractional = settings()[["is_fractional"]],
                                            hires_method = settings()[["agg_method"]])
       
   

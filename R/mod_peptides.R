@@ -21,7 +21,7 @@ mod_peptides_ui <- function(id) {
 #' peptides Server Functions
 #'
 #' @noRd 
-mod_peptides_server <- function(id, kin_dat, fit_params, settings){
+mod_peptides_server <- function(id, kin_dat, fit_params, settings, hires_dat){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
  
@@ -62,11 +62,6 @@ mod_peptides_server <- function(id, kin_dat, fit_params, settings){
     #   
     # })
     
-    hires_dat <- reactive({
-      
-      calculate_hires(fit_values = fit_params(), method = settings()[["agg_method"]], fractional = TRUE)
-      
-    })
     
     peptide_recovered_fit_params <- reactive({
       
@@ -95,6 +90,7 @@ mod_peptides_server <- function(id, kin_dat, fit_params, settings){
                                 recreated_fit_values = peptide_recovered_fit_params(),
                                 hires_method = settings()[["agg_method"]],
                                 if_girafe = TRUE, 
+                                fractional = settings()[["is_fractional"]],
                                 interactive = TRUE)
       
     })
