@@ -12,7 +12,8 @@ mod_peptides_ui <- function(id) {
   tagList(
     DT::dataTableOutput(ns("peptide_list")),
     ggiraph::girafeOutput(ns("peptide_uc"), width = "80%"),
-    DT::dataTableOutput(ns("peptide_fit_params"))
+    DT::dataTableOutput(ns("peptide_fit_params")),
+    DT::dataTableOutput(ns("peptide_uc_values"))
     # ggiraph::girafeOutput(ns("peptide_uc_2"), width = "80%")
   )
 }
@@ -102,8 +103,6 @@ mod_peptides_server <- function(id, kin_dat, fit_params, settings){
       
       validate(need(!is.null(input[["peptide_list_rows_selected"]]), "Select peptide to see its uptake curve."))
       
-      # browser()
-      
       og <- peptide_fit_params() %>%
         mutate(type = "original parameters") %>%
         select(type, n_1, k_1, n_2, k_2, n_3, k_3) 
@@ -125,7 +124,21 @@ mod_peptides_server <- function(id, kin_dat, fit_params, settings){
         
     })
     
-  
+   output[["peptide_uc_values"]] <- DT::renderDataTable({
+     
+     validate(need(!is.null(input[["peptide_list_rows_selected"]]), "Select peptide to see its uptake curve."))
+     
+     HRaDeX::recreate_uc_values(fit_dat = pep_kin_dat(), 
+                                recreated_fit_values = peptide_recovered_fit_params()) %>%
+       select( -deut_uptake, -err_deut_uptake) %>%
+       mutate(frac_deut_uptake = round(frac_deut_uptake, 6),
+              err_frac_deut_uptake = round(err_frac_deut_uptake, 6),
+              rec_deut_uptake = round(rec_deut_uptake, 6)) %>%
+       nicer_table(., 
+                   filename = "uc_params", 
+                   selection = "none")
+     
+   })
     
     
   })

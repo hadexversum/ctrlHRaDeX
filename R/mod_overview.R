@@ -10,11 +10,10 @@
 mod_overview_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    ggiraph::girafeOutput(outputId = ns("hires_plot"), width = "80%"),
-    ggiraph::girafeOutput(outputId = ns("validation"), width = "80%"),
+    mod_plot_and_table_ui(ns("hires")),
+    mod_plot_and_table_ui(ns("rmse")),
     textOutput(outputId = ns("rmse_stat")),
     ggiraph::girafeOutput(outputId = ns("histogram"), width = "80%"),
-    mod_plot_and_table_ui(ns("hist_plot"))
     
   )
 }
@@ -26,13 +25,35 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings, fi
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
-    output[["hires_plot"]] <- ggiraph::renderGirafe({
+    hires_plot <- reactive({
       
+      # browser()
       HRaDeX::plot_hires(hires_dat(), 
                          interactive = TRUE)
     })
+    
+    output[["hires_plot"]] <- ggiraph::renderGirafe({
+      
+      hires_plot()
+      
+    })
  
- 
+    nice_hires_dat <- reactive({
+      
+      hires_dat() %>%
+        mutate(k_est = round(k_est, 6),
+               n_1 = round(n_1, 6),
+               n_2 = round(n_2, 6),
+               n_3 = round(n_3, 6),
+               k_1 = round(k_1, 6),
+               k_2 = round(k_2, 6),
+               k_3 = round(k_3, 6))
+      
+    }) 
+    
+    mod_plot_and_table_server(id = "hires", 
+                              plt = hires_plot, 
+                              dat = nice_hires_dat)
     
     
     rec_uc_dat_alpha <- reactive({
@@ -62,34 +83,33 @@ mod_overview_server <- function(id, kin_dat, hires_dat, fit_params, settings, fi
       paste0("Mean RMSE: ", round(rmse_mean(), 4), " and median RMSE: ", round(rmse_median(), 4))
       
     })
-
-    output[["validation"]] <- ggiraph::renderGirafe({
-
-      girafe(ggobj = HRaDeX::plot_recovered_uc_coverage(rec_uc_rmse_dat_alpha(), 
-                                                        interactive = TRUE,
-                                                        style = "coverage") +
-               labs(title = paste0("RMSE of recovered UC for ", fit_state(), " state")))
-      
-    })
     
+    rmse_plot <- reactive({
+      
+      HRaDeX::plot_recovered_uc_coverage(rec_uc_rmse_dat_alpha(), 
+                                         interactive = TRUE,
+                                         style = "coverage") +
+               labs(title = paste0("RMSE of recovered UC for ", fit_state(), " state"))
+      
+    }) 
 
+    mod_plot_and_table_server("rmse",
+                              plt = rmse_plot,
+                              dat = nicer_rmse_dat)
     
-    histogram_plot <- reactive({
-      
-      ggplot(rec_uc_rmse_dat_alpha(), aes(rmse)) +
-        geom_histogram()
-      
-    })
     
-    histogram_data <- reactive({
+    nicer_rmse_dat <- reactive({
       
       mutate(rec_uc_rmse_dat_alpha(), 
-             rmse = round(rmse, 4))
+             rmse = round(rmse, 6))
     })
-    
-    mod_plot_and_table_server("hist_plot",
-                              plt = histogram_plot,
-                              dat = histogram_data)
+
+    output[["histogram"]] <- ggiraph::renderGirafe({
+      
+      
+      girafe(ggobj = ggplot(rec_uc_rmse_dat_alpha(), aes(rmse)) +
+               geom_histogram())
+    })
     
   })
 }

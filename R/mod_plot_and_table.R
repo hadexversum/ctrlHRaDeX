@@ -38,7 +38,12 @@ mod_plot_and_table_server <- function(id, plt, dat){
     
     output[["plot"]] <- ggiraph::renderGirafe({
       
-      girafe(ggobj = plt())
+      if(any(class(plt()) == "girafe")) {
+        plt()
+      } else {
+        girafe(ggobj = plt())
+        
+      }
       
     })
   })
